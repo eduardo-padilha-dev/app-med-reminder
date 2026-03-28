@@ -1,14 +1,12 @@
 import { Text, View } from "react-native";
-import { useMedicationStore } from "../../store/useMedicationStore";
+import { formatDate } from "../../utils/formatDate";
 
 export default function HomeScreen() {
-  const { medications } = useMedicationStore();
+  const hoje = formatDate(new Date());
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">
-        {medications.length} medicamentos cadastrados
-      </Text>
+      <Text className="text-xl font-bold text-blue-500">Hoje é {hoje}</Text>
     </View>
   );
 }
