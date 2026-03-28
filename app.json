@@ -2,8 +2,12 @@
   "expo": {
     "name": "app-med-reminder",
     "slug": "app-med-reminder",
+    "scheme": "app-med-reminder",
     "version": "1.0.0",
     "orientation": "portrait",
+    "web": {
+      "bundler": "metro"
+    },
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -24,6 +28,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
     }
   }
