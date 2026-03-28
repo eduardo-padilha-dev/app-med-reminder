@@ -1,8 +1,8 @@
-﻿# Med Reminder
+# MedReminder
 
 ## Sobre o app
 
-O **MedLembrete** é um aplicativo móvel para controle de medicamentos pessoais.
+O **MedReminder** é um aplicativo móvel para controle de medicamentos pessoais.
 Seu objetivo é ajudar o usuário a cadastrar seus medicamentos, registrar 
 os horários em que deve tomá-los e confirmar as doses ao longo do dia,
 mantendo um histórico de adesão ao tratamento.
@@ -68,11 +68,11 @@ solução nativa do Expo para SQLite em dispositivos móveis.
 
 ## Planejamento de sprints
 
-| Sprint | Período      | Tarefas                                                                 | Status |
-|--------|--------------|-------------------------------------------------------------------------|--------|
-| 1      | Semana 1-2   | Configurar projeto Expo, expo-router, estrutura de pastas               | ⬜     |
-| 2      | Semana 3-4   | Criar banco SQLite, tela Home e listagem de medicamentos                | ⬜     |
-| 3      | Semana 5-6   | Tela de cadastro e edição de medicamentos com validações                | ⬜     |
-| 4      | Semana 7-8   | Confirmar dose do dia, tela de detalhes do medicamento                  | ⬜     |
-| 5      | Semana 9-10  | Tela de histórico, filtros por data                                     | ⬜     |
-| 6      | Semana 11-12 | Ajustes de UI, testes, build APK e gravação do vídeo final              | ⬜     |
+| Sprint | Período      | Tarefas                                                                                          | Status |
+|--------|--------------|--------------------------------------------------------------------------------------------------|--------|
+| 1      | Semana 1-2   | Configurar projeto Expo (#5), instalar ooglon-ui (#6), NativeWind (#7), Zustand (#8), RHF+Zod (#9), date-fns (#10) | ⬜     |
+| 2      | Semana 3-4   | Configurar estrutura de pastas (#11), criar tela Home (#12), criar tela Cadastro (#13), criar tela Histórico (#14) | ⬜     |
+| 3      | Semana 5-6   | Criar componente MedicationCard (#15), criar componente StatusBadge (#16), popular telas com dados fake (#17) | ⬜     |
+| 4      | Semana 7-8   | Configurar SQLite (#20), criar migrations (#21), implementar store Zustand (#22), CRUD completo (#23, #24, #25, #26) | ⬜     |
+| 5      | Semana 9-10  | Tela Detalhes (#27), tela Edição (#28), confirmar dose (#29), Histórico com dados reais (#30), Empty State (#31) | ⬜     |
+| 6      | Semana 11-12 | Configurações (#32), Dark Mode (#33), validações Zod (#34), testes e bugs (#35), build APK (#36), Release (#37), vídeo (#39) | ⬜     |
