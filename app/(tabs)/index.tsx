@@ -1,31 +1,31 @@
-import { Button, ScreenWrapper, Text } from "@andresjesse/bobber-ui";
-import MedicationCard from "../../components/MedicationCard";
+import { ScreenWrapper, Text } from "@andresjesse/bobber-ui";
+import HomeMedicationCard from "../../components/HomeMedicationCard";
 import { router } from "expo-router";
+import { useMedicationStore } from "../../store/useMedicationStore";
 
 export default function Screen() {
+  const medications = useMedicationStore((state) => state.medications);
+
   return (
     <ScreenWrapper.Scrollable>
-      <MedicationCard
-        name="Metformina"
-        dose="500 mg"
-        time="08:00 AM"
-        status="tomado"
-        onPress={() => router.push("/medication/metformina")}
-      />
-      <MedicationCard
-        name="Atorvastatina"
-        dose="20 mg"
-        time="20:00 PM"
-        status="pendente"
-        onPress={() => router.push("/medication/atorvastatina")}
-      />
-      <MedicationCard
-        name="Vitamina D3"
-        dose="2000 UI"
-        time="08:00 PM"
-        status="pulado"
-        onPress={() => router.push("/medication/vitamina-d3")}
-      />
+      {medications
+        .filter((item) => item.active)
+        .map((medication) => (
+          <HomeMedicationCard
+            key={medication.id}
+            name={medication.name}
+            dose={medication.dose}
+            time={medication.times[0] ?? "--:--"}
+            onPress={() =>
+              router.push({
+                pathname: "/medication/[id]",
+                params: { id: String(medication.id) },
+              })
+            }
+          />
+        ))}
+
+      {!medications.length && <Text>Nenhum medicamento cadastrado.</Text>}
     </ScreenWrapper.Scrollable>
   );
 }
