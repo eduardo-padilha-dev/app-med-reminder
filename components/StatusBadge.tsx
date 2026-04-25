@@ -1,4 +1,4 @@
-import { Badge, useTheme } from "@andresjesse/bobber-ui";
+import { Badge, Text, useTheme } from "@andresjesse/bobber-ui";
 import { getStatusBadgeColors } from "../constants/colors";
 
 export type MedicationStatus = "tomado" | "pendente" | "pulado";
@@ -19,20 +19,21 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <Badge
-      size="sm"
+      size="lg"
       containerStyle={{
         marginTop: 2,
         backgroundColor: colors.bg,
-        borderColor: colors.border,
-        borderWidth: 1,
       }}
       textStyle={{
         color: colors.text,
-        fontWeight: "700",
+        fontSize: 10,
+        fontWeight: "500",
         fontStyle: "normal",
       }}
     >
-      {statusLabel[status]}
+      <Text color={colors.text} fontSize={12} fontWeight={"700"}>
+        {statusLabel[status]}
+      </Text>
     </Badge>
   );
 }

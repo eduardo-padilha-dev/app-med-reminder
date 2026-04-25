@@ -1,26 +1,23 @@
 import React from "react";
-import { MedicationStatus } from "./StatusBadge";
 import { Button, Card, Flex, Text } from "@andresjesse/bobber-ui";
 import { Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-interface MedicationCardProps {
+interface HomeMedicationCardProps {
   name: string;
   dose: string;
   time: string;
-  status: MedicationStatus;
   onPress?: () => void;
   onConfirm?: () => void;
 }
 
-export default function MedicationCard({
+export default function HomeMedicationCard({
   name,
   dose,
   time,
-  status,
   onPress,
   onConfirm,
-}: MedicationCardProps) {
+}: HomeMedicationCardProps) {
   return (
     <Pressable
       onPress={onPress}
