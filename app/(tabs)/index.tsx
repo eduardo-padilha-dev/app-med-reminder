@@ -1,12 +1,31 @@
-import { Text, View } from "react-native";
-import { formatDate } from "../../utils/formatDate";
+import { Button, ScreenWrapper, Text } from "@andresjesse/bobber-ui";
+import MedicationCard from "../../components/MedicationCard";
+import { router } from "expo-router";
 
-export default function HomeScreen() {
-  const hoje = formatDate(new Date());
-
+export default function Screen() {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">Hoje é {hoje}</Text>
-    </View>
+    <ScreenWrapper.Scrollable>
+      <MedicationCard
+        name="Metformina"
+        dose="500 mg"
+        time="08:00 AM"
+        status="tomado"
+        onPress={() => router.push("/medication/metformina")}
+      />
+      <MedicationCard
+        name="Atorvastatina"
+        dose="20 mg"
+        time="20:00 PM"
+        status="pendente"
+        onPress={() => router.push("/medication/atorvastatina")}
+      />
+      <MedicationCard
+        name="Vitamina D3"
+        dose="2000 UI"
+        time="08:00 PM"
+        status="pulado"
+        onPress={() => router.push("/medication/vitamina-d3")}
+      />
+    </ScreenWrapper.Scrollable>
   );
 }
