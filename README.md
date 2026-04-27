@@ -72,7 +72,7 @@ solução nativa do Expo para SQLite em dispositivos móveis.
 |--------|--------------|--------------------------------------------------------------------------------------------------|--------|
 | 1      | Semana 1-2   | Configurar projeto Expo (#5), instalar ooglon-ui (#6), NativeWind (#7), Zustand (#8), RHF+Zod (#9), date-fns (#10) | ✅     |
 | 2      | Semana 3-4   | Configurar estrutura de pastas (#11), criar tela Home (#12), criar tela Cadastro (#13), criar tela Histórico (#14) | ⬜     |
-| 3      | Semana 5-6   | Criar componente MedicationCard (#15), criar componente StatusBadge (#16), popular telas com dados fake (#17) | ⬜     |
+| 3      | Semana 5-6   | Criar componente MedicationCard (#15), criar componente StatusBadge (#16), popular telas com dados fake (#17) | ✅     |
 | 4      | Semana 7-8   | Configurar SQLite (#20), criar migrations (#21), implementar store Zustand (#22), CRUD completo (#23, #24, #25, #26) | ⬜     |
 | 5      | Semana 9-10  | Tela Detalhes (#27), tela Edição (#28), confirmar dose (#29), Histórico com dados reais (#30), Empty State (#31) | ⬜     |
 | 6      | Semana 11-12 | Configurações (#32), Dark Mode (#33), validações Zod (#34), testes e bugs (#35), build APK (#36), Release (#37), vídeo (#39) | ⬜     |
