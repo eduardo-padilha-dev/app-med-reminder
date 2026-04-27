@@ -70,7 +70,7 @@ solução nativa do Expo para SQLite em dispositivos móveis.
 
 | Sprint | Período      | Tarefas                                                                                          | Status |
 |--------|--------------|--------------------------------------------------------------------------------------------------|--------|
-| 1      | Semana 1-2   | Configurar projeto Expo (#5), instalar ooglon-ui (#6), NativeWind (#7), Zustand (#8), RHF+Zod (#9), date-fns (#10) | ⬜     |
+| 1      | Semana 1-2   | Configurar projeto Expo (#5), instalar ooglon-ui (#6), NativeWind (#7), Zustand (#8), RHF+Zod (#9), date-fns (#10) | ✅     |
 | 2      | Semana 3-4   | Configurar estrutura de pastas (#11), criar tela Home (#12), criar tela Cadastro (#13), criar tela Histórico (#14) | ⬜     |
 | 3      | Semana 5-6   | Criar componente MedicationCard (#15), criar componente StatusBadge (#16), popular telas com dados fake (#17) | ⬜     |
 | 4      | Semana 7-8   | Configurar SQLite (#20), criar migrations (#21), implementar store Zustand (#22), CRUD completo (#23, #24, #25, #26) | ⬜     |
