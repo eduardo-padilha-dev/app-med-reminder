@@ -23,7 +23,10 @@ export default function HistoryMedicationCard({
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => (pressed ? { opacity: 0.92 } : undefined)}
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.92 : 1,
+        marginBottom: 12,
+      })}
     >
       <View style={{ position: "relative" }}>
         <Card gap="md">
