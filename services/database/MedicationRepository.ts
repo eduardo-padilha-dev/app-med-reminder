@@ -31,4 +31,41 @@ export default class MedicationRepository {
 
     return result;
   }
+
+  public async findAll(): Promise<Medication[]> {
+    const rows = await db.getAllAsync<any>(
+      "SELECT * FROM medications WHERE active = 1",
+    );
+    return rows.map((row) => ({
+      ...row,
+      times: JSON.parse(row.times),
+    }));
+  }
+
+  public async findById(id: number): Promise<Medication | null> {
+    const row = await db.getFirstAsync<any>(
+      "SELECT * FROM medications WHERE id = ?",
+      [id],
+    );
+    if (!row) return null;
+    return { ...row, times: JSON.parse(row.times) };
+  }
+
+  public async update(medication: Medication) {
+    await db.runAsync(
+      "UPDATE medications SET name = ?, dose = ?, frequency = ?, times = ?, notes = ? WHERE id = ?",
+      [
+        medication.name,
+        medication.dose,
+        medication.frequency,
+        JSON.stringify(medication.times),
+        medication.notes ?? null,
+        medication.id,
+      ],
+    );
+  }
+
+  public async softDelete(id: number) {
+    await db.runAsync("UPDATE medications SET active = 0 WHERE id = ?", [id]);
+  }
 }

@@ -6,8 +6,9 @@ import { useColorScheme } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { APP_CUSTOM_THEME } from "../constants/theme";
 import MedicationRepository from "../services/database/MedicationRepository";
-import MedicationLogs from "../services/database/MedicationLogs";
+import MedicationLogs from "../services/database/MedicationLogsRepository";
 import { useEffect } from "react";
+import { useMedicationStore } from "../store/useMedicationStore";
 
 export default function RootLayout() {
   const systemColorScheme = useColorScheme();
@@ -21,6 +22,10 @@ export default function RootLayout() {
 
         const medicationLogs = new MedicationLogs();
         await medicationLogs.up();
+
+        const { fetchMedications, fetchLogs } = useMedicationStore.getState();
+        await fetchMedications();
+        await fetchLogs();
 
         console.log("Banco de dados inicializado com sucesso!");
       } catch (error) {
