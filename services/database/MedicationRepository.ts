@@ -69,4 +69,8 @@ export default class MedicationRepository {
   public async softDelete(id: number) {
     await db.runAsync("UPDATE medications SET active = 0 WHERE id = ?", [id]);
   }
+
+  public async deleteAll() {
+    await db.runAsync("DELETE FROM medications;");
+  }
 }
