@@ -12,16 +12,24 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getAppColors } from "../../constants/colors";
 import { Pressable, View } from "react-native";
+import { useEffect } from "react";
 
 export default function Screen() {
+  const {
+    medications,
+    addMedication,
+    deleteMedication,
+    confirmDose,
+    fetchMedications,
+  } = useMedicationStore();
+
   const { theme } = useTheme();
   const colors = getAppColors(theme.colorScheme);
   const pagePadding = theme.spacing("default");
-  const medications = useMedicationStore((state) => state.medications);
-  const pendingOrSkippedMedications = medications.filter(
-    (item) =>
-      item.active && (item.status === "pendente" || item.status === "pulado"),
-  );
+
+  useEffect(() => {
+    fetchMedications();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -60,12 +68,11 @@ export default function Screen() {
           Seus Medicamentos
         </Text>
 
-        <Text fontSize={14} fontWeight={"medium"} color={"gray"}>
-          Você tem {pendingOrSkippedMedications.length} medicamentos pendentes
-          para hoje.
+        <Text fontSize={14} color={"gray"}>
+          Você tem {medications.length} medicamentos ativos.
         </Text>
 
-        {pendingOrSkippedMedications.map((medication) => (
+        {medications.map((medication) => (
           <HomeMedicationCard
             key={medication.id}
             name={medication.name}
@@ -80,9 +87,7 @@ export default function Screen() {
           />
         ))}
 
-        {!pendingOrSkippedMedications.length && (
-          <Text>Nenhum medicamento pendente hoje.</Text>
-        )}
+        {!medications.length && <Text>Nenhum medicamento cadastrado.</Text>}
       </ScreenWrapper.Scrollable>
 
       <Pressable
