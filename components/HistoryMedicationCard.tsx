@@ -20,6 +20,7 @@ export default function HistoryMedicationCard({
 }: HistoryMedicationCardProps) {
   const { theme } = useTheme();
   const statusColors = getStatusBadgeColors(status, theme.colorScheme);
+
   return (
     <Pressable
       onPress={onPress}
