@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Pressable } from "react-native";
 import { getAppColors } from "../constants/colors";
 import { useMedicationStore } from "../store/useMedicationStore";
+import { Medication } from "../utils/types";
 import z from "zod";
 
 const FREQUENCY_OPTIONS = [
@@ -24,23 +25,32 @@ const FREQUENCY_OPTIONS = [
 ];
 
 type MedicationFormProps = {
+  medication?: Medication;
   onSuccess?: () => void;
 };
 
-export default function MedicationForm({ onSuccess }: MedicationFormProps) {
+export default function MedicationForm({
+  medication,
+  onSuccess,
+}: MedicationFormProps) {
   const { theme } = useTheme();
   const colors = getAppColors(theme.colorScheme);
-  const [times, setTimes] = useState<string[]>(["08:00"]);
+  const [times, setTimes] = useState<string[]>(medication?.times ?? ["08:00"]);
   const [timeInput, setTimeInput] = useState("");
   const [timesError, setTimesError] = useState<string | null>(null);
   const addMedication = useMedicationStore((state) => state.addMedication);
+  const updateMedication = useMedicationStore(
+    (state) => state.updateMedication,
+  );
+
+  const isEditing = !!medication;
 
   const form = useForm({
     initialValues: {
-      name: "",
-      dose: "",
-      frequency: "Todos os dias",
-      notes: "",
+      name: medication?.name ?? "",
+      dose: medication?.dose ?? "",
+      frequency: medication?.frequency ?? "Todos os dias",
+      notes: medication?.notes ?? "",
     },
     validations: {
       name: z.string().min(2, "Informe o nome do medicamento"),
@@ -56,14 +66,25 @@ export default function MedicationForm({ onSuccess }: MedicationFormProps) {
 
       setTimesError(null);
 
-      await addMedication({
-        name: values.name,
-        dose: values.dose,
-        frequency: values.frequency,
-        notes: values.notes,
-        times,
-        active: 1,
-      });
+      if (isEditing) {
+        await updateMedication({
+          ...medication,
+          name: values.name,
+          dose: values.dose,
+          frequency: values.frequency,
+          notes: values.notes,
+          times,
+        });
+      } else {
+        await addMedication({
+          name: values.name,
+          dose: values.dose,
+          frequency: values.frequency,
+          notes: values.notes,
+          times,
+          active: 1,
+        });
+      }
 
       onSuccess?.();
     },
@@ -95,7 +116,7 @@ export default function MedicationForm({ onSuccess }: MedicationFormProps) {
   return (
     <Form gap="sm">
       <Text fontSize={12} fontWeight="700" color={colors.textSecondary}>
-        CADASTRO
+        {isEditing ? "EDIÇÃO" : "CADASTRO"}
       </Text>
 
       <TextInput
@@ -172,7 +193,7 @@ export default function MedicationForm({ onSuccess }: MedicationFormProps) {
       />
 
       <Button
-        title="Salvar Medicamento"
+        title={isEditing ? "Salvar Alterações" : "Salvar Medicamento"}
         fullWidth
         size="lg"
         disabled={form.hasErrors}
