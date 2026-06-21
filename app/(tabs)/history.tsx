@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMedicationStore } from "../../store/useMedicationStore";
 import HistoryMedicationCard from "../../components/HistoryMedicationCard";
 import { router } from "expo-router";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { COLORS, getAppColors } from "../../constants/colors";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -29,18 +29,8 @@ type LogGroup = {
 };
 
 function parseScheduledDate(value: string): Date {
-  const [datePart, timePart = "00:00:00"] = value.split(" ");
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hours, minutes, seconds] = timePart.split(":").map(Number);
-
-  return new Date(
-    year,
-    (month || 1) - 1,
-    day || 1,
-    hours || 0,
-    minutes || 0,
-    seconds || 0,
-  );
+  const normalized = value.includes("T") ? value : value.replace(" ", "T");
+  return parseISO(normalized);
 }
 
 function capitalize(text: string): string {
@@ -193,12 +183,16 @@ export default function HistoryScreen() {
           {group.logs.map((log) => {
             const medication = medicationById[log.medication_id];
             const logDate = parseScheduledDate(log.scheduled_time);
+            const displayTime =
+              log.taken_at && log.status === "tomado"
+                ? format(parseISO(log.taken_at), "HH:mm")
+                : format(logDate, "HH:mm");
 
             return (
               <HistoryMedicationCard
                 key={log.id}
                 name={medication?.name ?? `Medicamento #${log.medication_id}`}
-                time={format(logDate, "HH:mm")}
+                time={displayTime}
                 status={log.status}
                 onPress={() =>
                   router.push({
