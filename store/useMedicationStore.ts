@@ -17,6 +17,7 @@ interface MedicationStore {
   deleteMedication: (id: number) => Promise<void>;
   confirmDose: (medicationId: number, scheduledTime: string) => Promise<void>;
   fetchLogs: () => Promise<void>;
+  resetAllData: () => Promise<void>;
 }
 
 export const useMedicationStore = create<MedicationStore>((set, get) => ({
@@ -72,5 +73,11 @@ export const useMedicationStore = create<MedicationStore>((set, get) => ({
   fetchLogs: async () => {
     const medicationLogs = await medicationLogsRepo.findAll();
     set({ medicationLogs });
+  },
+
+  resetAllData: async () => {
+    await medicationLogsRepo.deleteAll();
+    await medicationRepo.deleteAll();
+    set({ medications: [], medicationLogs: [] });
   },
 }));

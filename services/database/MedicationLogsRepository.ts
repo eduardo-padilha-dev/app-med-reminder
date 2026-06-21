@@ -38,4 +38,8 @@ export default class MedicationLogsRepository {
       [medicationId],
     );
   }
+
+  public async deleteAll() {
+    await db.runAsync("DELETE FROM medication_logs;");
+  }
 }
