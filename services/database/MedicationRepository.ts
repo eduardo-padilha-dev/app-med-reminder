@@ -1,4 +1,4 @@
-import db from "./initializeDatabse";
+import db from "./initializeDatabase";
 import { Medication } from "../../utils/types";
 
 export default class MedicationRepository {
@@ -16,9 +16,9 @@ export default class MedicationRepository {
     await db.runAsync("DROP TABLE medications;");
   }
 
-  public async create(medication: Omit<Medication, "id">) {
+  public async create(medication: Omit<Medication, "id" | "created_at">) {
     const result = await db.runAsync(
-      "INSERT INTO medications (name, dose, frequency, times, notes, active) values (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO medications (name, dose, frequency, times, notes, active, created_at) values (?, ?, ?, ?, ?, ?, ?)",
       [
         medication.name,
         medication.dose,
@@ -26,6 +26,7 @@ export default class MedicationRepository {
         JSON.stringify(medication.times),
         medication.notes ?? null,
         medication.active,
+        new Date().toISOString(),
       ],
     );
 

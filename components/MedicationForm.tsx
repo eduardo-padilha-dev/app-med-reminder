@@ -11,6 +11,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { Pressable } from "react-native";
 import { getAppColors } from "../constants/colors";
+import { useMedicationStore } from "../store/useMedicationStore";
 import z from "zod";
 
 const FREQUENCY_OPTIONS = [
@@ -32,6 +33,7 @@ export default function MedicationForm({ onSuccess }: MedicationFormProps) {
   const [times, setTimes] = useState<string[]>(["08:00"]);
   const [timeInput, setTimeInput] = useState("");
   const [timesError, setTimesError] = useState<string | null>(null);
+  const addMedication = useMedicationStore((state) => state.addMedication);
 
   const form = useForm({
     initialValues: {
@@ -46,16 +48,21 @@ export default function MedicationForm({ onSuccess }: MedicationFormProps) {
       frequency: z.string().min(1, "Informe a frequencia"),
       notes: z.string().optional(),
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (!times.length) {
         setTimesError("Adicione ao menos um horario");
         return;
       }
 
       setTimesError(null);
-      console.log("Form Submitted:", {
-        ...values,
+
+      await addMedication({
+        name: values.name,
+        dose: values.dose,
+        frequency: values.frequency,
+        notes: values.notes,
         times,
+        active: 1,
       });
 
       onSuccess?.();

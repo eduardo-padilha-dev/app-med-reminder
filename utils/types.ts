@@ -6,6 +6,7 @@ export type Medication = {
   times: string[];
   notes?: string;
   active: number;
+  created_at: string;
 };
 
 export type MedicationLog = {

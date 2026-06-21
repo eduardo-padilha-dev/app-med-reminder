@@ -10,7 +10,7 @@ interface MedicationStore {
   medications: Medication[];
   medicationLogs: MedicationLog[];
   fetchMedications: () => Promise<void>;
-  addMedication: (medication: Omit<Medication, "id">) => Promise<void>;
+  addMedication: (medication: Omit<Medication, "id" | "created_at">) => Promise<void>;
   updateMedication: (medication: Medication) => Promise<void>;
   deleteMedication: (id: number) => Promise<void>;
   confirmDose: (medicationId: number, scheduledTime: string) => Promise<void>;
