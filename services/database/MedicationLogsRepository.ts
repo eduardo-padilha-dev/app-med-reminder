@@ -1,4 +1,4 @@
-import db from "./initializeDatabse";
+import db from "./initializeDatabase";
 import { MedicationLog } from "../../utils/types";
 
 export default class MedicationLogsRepository {
