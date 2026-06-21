@@ -10,14 +10,16 @@ interface MedicationStore {
   medications: Medication[];
   medicationLogs: MedicationLog[];
   fetchMedications: () => Promise<void>;
-  addMedication: (medication: Omit<Medication, "id" | "created_at">) => Promise<void>;
+  addMedication: (
+    medication: Omit<Medication, "id" | "created_at">,
+  ) => Promise<void>;
   updateMedication: (medication: Medication) => Promise<void>;
   deleteMedication: (id: number) => Promise<void>;
   confirmDose: (medicationId: number, scheduledTime: string) => Promise<void>;
   fetchLogs: () => Promise<void>;
 }
 
-export const useMedicationStore = create<MedicationStore>((set) => ({
+export const useMedicationStore = create<MedicationStore>((set, get) => ({
   medications: [],
   medicationLogs: [],
 
@@ -45,6 +47,18 @@ export const useMedicationStore = create<MedicationStore>((set) => ({
   },
 
   confirmDose: async (medicationId, scheduledTime) => {
+    const alreadyConfirmed = get().medicationLogs.some(
+      (log) =>
+        log.medication_id === medicationId &&
+        log.scheduled_time === scheduledTime &&
+        log.status === "tomado",
+    );
+
+    if (alreadyConfirmed) {
+      console.log("Dose já confirmada, ignorando duplicata.");
+      return;
+    }
+
     await medicationLogsRepo.create({
       medication_id: medicationId,
       scheduled_time: scheduledTime,

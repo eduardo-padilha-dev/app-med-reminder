@@ -14,14 +14,19 @@ import { getAppColors } from "../../constants/colors";
 import { Pressable, View } from "react-native";
 import { useEffect } from "react";
 
+function getTodayScheduledTime(time: string) {
+  const today = new Date().toISOString().slice(0, 10); // "2026-06-21"
+  return `${today}T${time}:00`;
+}
+
 export default function Screen() {
-  const {
-    medications,
-    addMedication,
-    deleteMedication,
-    confirmDose,
-    fetchMedications,
-  } = useMedicationStore();
+  const medications = useMedicationStore((state) => state.medications);
+  const medicationLogs = useMedicationStore((state) => state.medicationLogs);
+  const fetchMedications = useMedicationStore(
+    (state) => state.fetchMedications,
+  );
+  const fetchLogs = useMedicationStore((state) => state.fetchLogs);
+  const confirmDose = useMedicationStore((state) => state.confirmDose);
 
   const { theme } = useTheme();
   const colors = getAppColors(theme.colorScheme);
@@ -29,7 +34,17 @@ export default function Screen() {
 
   useEffect(() => {
     fetchMedications();
+    fetchLogs();
   }, []);
+
+  const isConfirmedToday = (medicationId: number, scheduledTime: string) => {
+    return medicationLogs.some(
+      (log) =>
+        log.medication_id === medicationId &&
+        log.scheduled_time === scheduledTime &&
+        log.status === "tomado",
+    );
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -72,20 +87,28 @@ export default function Screen() {
           Você tem {medications.length} medicamentos ativos.
         </Text>
 
-        {medications.map((medication) => (
-          <HomeMedicationCard
-            key={medication.id}
-            name={medication.name}
-            dose={medication.dose}
-            time={medication.times[0] ?? "--:--"}
-            onPress={() =>
-              router.push({
-                pathname: "/medication/[id]",
-                params: { id: String(medication.id) },
-              })
-            }
-          />
-        ))}
+        {medications.map((medication) => {
+          const time = medication.times[0] ?? "--:--";
+          const scheduledTime = getTodayScheduledTime(time);
+          const confirmed = isConfirmedToday(medication.id, scheduledTime);
+
+          return (
+            <HomeMedicationCard
+              key={medication.id}
+              name={medication.name}
+              dose={medication.dose}
+              time={time}
+              confirmed={confirmed}
+              onPress={() =>
+                router.push({
+                  pathname: "/medication/[id]",
+                  params: { id: String(medication.id) },
+                })
+              }
+              onConfirm={() => confirmDose(medication.id, scheduledTime)}
+            />
+          );
+        })}
 
         {!medications.length && <Text>Nenhum medicamento cadastrado.</Text>}
       </ScreenWrapper.Scrollable>
