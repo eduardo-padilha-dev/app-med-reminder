@@ -13,7 +13,7 @@ import { Pressable } from "react-native";
 import { getAppColors } from "../constants/colors";
 import { useMedicationStore } from "../store/useMedicationStore";
 import { Medication } from "../utils/types";
-import z from "zod";
+import { medicationValidationSchema } from "../utils/medicationSchema";
 
 const FREQUENCY_OPTIONS = [
   "Todos os dias",
@@ -52,12 +52,7 @@ export default function MedicationForm({
       frequency: medication?.frequency ?? "Todos os dias",
       notes: medication?.notes ?? "",
     },
-    validations: {
-      name: z.string().min(2, "Informe o nome do medicamento"),
-      dose: z.string().min(1, "Informe a dose"),
-      frequency: z.string().min(1, "Informe a frequencia"),
-      notes: z.string().optional(),
-    },
+    validations: medicationValidationSchema,
     onSubmit: async (values) => {
       if (!times.length) {
         setTimesError("Adicione ao menos um horario");
