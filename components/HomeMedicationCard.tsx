@@ -1,13 +1,14 @@
 import React from "react";
-import { Badge, Button, Card, Flex, Text } from "@andresjesse/bobber-ui";
+import { Button, Card, Flex, Text } from "@andresjesse/bobber-ui";
 import { Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import StatusBadge, { MedicationStatus } from "./StatusBadge";
 
 interface HomeMedicationCardProps {
   name: string;
   dose: string;
   time: string;
-  confirmed?: boolean;
+  status: MedicationStatus;
   onPress?: () => void;
   onConfirm?: () => void;
 }
@@ -16,7 +17,7 @@ export default function HomeMedicationCard({
   name,
   dose,
   time,
-  confirmed = false,
+  status,
   onPress,
   onConfirm,
 }: HomeMedicationCardProps) {
@@ -36,11 +37,7 @@ export default function HomeMedicationCard({
             </Text>
           </Flex>
 
-          {confirmed ? (
-            <Badge color="green" size="sm">
-              Tomado
-            </Badge>
-          ) : (
+          {status === "pendente" ? (
             <Button
               title="Confirmar"
               size="sm"
@@ -51,6 +48,8 @@ export default function HomeMedicationCard({
               }}
               containerStyle={{ alignSelf: "center" }}
             />
+          ) : (
+            <StatusBadge status={status} />
           )}
         </Flex>
       </Card>
