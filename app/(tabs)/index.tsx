@@ -1,4 +1,5 @@
 import {
+  Button,
   Flex,
   Header,
   ScreenWrapper,
@@ -11,13 +12,10 @@ import { useMedicationStore } from "../../store/useMedicationStore";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getAppColors } from "../../constants/colors";
+import { getTodayScheduledTime } from "../../utils/formatDate";
+import { MedicationStatus } from "../../components/StatusBadge";
 import { Pressable, View } from "react-native";
-import { useEffect } from "react";
-
-function getTodayScheduledTime(time: string) {
-  const today = new Date().toISOString().slice(0, 10); // "2026-06-21"
-  return `${today}T${time}:00`;
-}
+import { useEffect, useMemo } from "react";
 
 export default function Screen() {
   const medications = useMedicationStore((state) => state.medications);
@@ -27,24 +25,53 @@ export default function Screen() {
   );
   const fetchLogs = useMedicationStore((state) => state.fetchLogs);
   const confirmDose = useMedicationStore((state) => state.confirmDose);
+  const checkAndMarkSkippedDoses = useMedicationStore(
+    (state) => state.checkAndMarkSkippedDoses,
+  );
 
   const { theme } = useTheme();
   const colors = getAppColors(theme.colorScheme);
   const pagePadding = theme.spacing("default");
 
   useEffect(() => {
-    fetchMedications();
-    fetchLogs();
+    const init = async () => {
+      await fetchMedications();
+      await fetchLogs();
+      await checkAndMarkSkippedDoses();
+    };
+    init();
   }, []);
 
-  const isConfirmedToday = (medicationId: number, scheduledTime: string) => {
-    return medicationLogs.some(
-      (log) =>
-        log.medication_id === medicationId &&
-        log.scheduled_time === scheduledTime &&
-        log.status === "tomado",
+  const getDoseStatus = (
+    medicationId: number,
+    scheduledTime: string,
+  ): MedicationStatus => {
+    const log = medicationLogs.find(
+      (l) =>
+        l.medication_id === medicationId && l.scheduled_time === scheduledTime,
     );
+    return log ? log.status : "pendente";
   };
+
+  const todaysDoses = useMemo(() => {
+    const doses = medications.flatMap((medication) =>
+      medication.times.map((time) => {
+        const scheduledTime = getTodayScheduledTime(time);
+        return {
+          medicationId: medication.id,
+          name: medication.name,
+          dose: medication.dose,
+          time,
+          scheduledTime,
+          status: getDoseStatus(medication.id, scheduledTime),
+        };
+      }),
+    );
+
+    return doses
+      .filter((dose) => dose.status !== "tomado")
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [medications, medicationLogs]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -84,33 +111,72 @@ export default function Screen() {
         </Text>
 
         <Text fontSize={14} color={"gray"}>
-          Você tem {medications.length} medicamentos ativos.
+          Você tem {todaysDoses.length} doses programadas para hoje.
         </Text>
 
-        {medications.map((medication) => {
-          const time = medication.times[0] ?? "--:--";
-          const scheduledTime = getTodayScheduledTime(time);
-          const confirmed = isConfirmedToday(medication.id, scheduledTime);
-
-          return (
+        {medications.length === 0 ? (
+          <Flex
+            align="center"
+            gap="sm"
+            style={{ marginTop: 60, paddingHorizontal: 20 }}
+          >
+            <Ionicons
+              name="medical-outline"
+              size={64}
+              color={theme.colors.foreground("auto", 1)}
+            />
+            <Text fontWeight="700" fontSize={18} textAlign="center">
+              Nenhum medicamento cadastrado
+            </Text>
+            <Text color="gray" textAlign="center">
+              Adicione seu primeiro medicamento para começar a acompanhar suas
+              doses.
+            </Text>
+            <Button
+              title="Adicionar Medicamento"
+              color="blue"
+              onPress={() => router.push("/medication/new")}
+              containerStyle={{ marginTop: 12 }}
+            />
+          </Flex>
+        ) : todaysDoses.length === 0 ? (
+          <Flex
+            align="center"
+            gap="sm"
+            style={{ marginTop: 60, paddingHorizontal: 20 }}
+          >
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={64}
+              color={theme.colors.get("green")}
+            />
+            <Text fontWeight="700" fontSize={18} textAlign="center">
+              Tudo certo por hoje! 🎉
+            </Text>
+            <Text color="gray" textAlign="center">
+              Você já confirmou todas as doses programadas para hoje.
+            </Text>
+          </Flex>
+        ) : (
+          todaysDoses.map((dose) => (
             <HomeMedicationCard
-              key={medication.id}
-              name={medication.name}
-              dose={medication.dose}
-              time={time}
-              confirmed={confirmed}
+              key={`${dose.medicationId}-${dose.time}`}
+              name={dose.name}
+              dose={dose.dose}
+              time={dose.time}
+              status={dose.status}
               onPress={() =>
                 router.push({
                   pathname: "/medication/[id]",
-                  params: { id: String(medication.id) },
+                  params: { id: String(dose.medicationId) },
                 })
               }
-              onConfirm={() => confirmDose(medication.id, scheduledTime)}
+              onConfirm={() =>
+                confirmDose(dose.medicationId, dose.scheduledTime)
+              }
             />
-          );
-        })}
-
-        {!medications.length && <Text>Nenhum medicamento cadastrado.</Text>}
+          ))
+        )}
       </ScreenWrapper.Scrollable>
 
       <Pressable

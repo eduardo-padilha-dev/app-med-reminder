@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { Medication, MedicationLog } from "../utils/types";
 import MedicationRepository from "../services/database/MedicationRepository";
 import MedicationLogsRepository from "../services/database/MedicationLogsRepository";
+import {
+  getTodayScheduledTime,
+  getDateRangeStrings,
+} from "../utils/formatDate";
 
 const medicationRepo = new MedicationRepository();
 const medicationLogsRepo = new MedicationLogsRepository();
@@ -18,6 +22,7 @@ interface MedicationStore {
   confirmDose: (medicationId: number, scheduledTime: string) => Promise<void>;
   fetchLogs: () => Promise<void>;
   resetAllData: () => Promise<void>;
+  checkAndMarkSkippedDoses: () => Promise<void>;
 }
 
 export const useMedicationStore = create<MedicationStore>((set, get) => ({
@@ -79,5 +84,42 @@ export const useMedicationStore = create<MedicationStore>((set, get) => ({
     await medicationLogsRepo.deleteAll();
     await medicationRepo.deleteAll();
     set({ medications: [], medicationLogs: [] });
+  },
+
+  checkAndMarkSkippedDoses: async () => {
+    const { medications, medicationLogs } = get();
+    const now = new Date();
+
+    for (const medication of medications) {
+      const createdDate = new Date(medication.created_at);
+      const days = getDateRangeStrings(createdDate, now);
+
+      for (const day of days) {
+        for (const time of medication.times) {
+          const scheduledTime = `${day}T${time}:00`;
+          const scheduledDate = new Date(scheduledTime);
+
+          if (scheduledDate >= now) continue; // ainda não chegou a hora
+
+          const hasLog = medicationLogs.some(
+            (log) =>
+              log.medication_id === medication.id &&
+              log.scheduled_time === scheduledTime,
+          );
+
+          if (!hasLog) {
+            await medicationLogsRepo.create({
+              medication_id: medication.id,
+              scheduled_time: scheduledTime,
+              taken_at: null,
+              status: "pulado",
+            });
+          }
+        }
+      }
+    }
+
+    const updatedLogs = await medicationLogsRepo.findAll();
+    set({ medicationLogs: updatedLogs });
   },
 }));
